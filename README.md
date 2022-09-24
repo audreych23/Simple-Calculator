@@ -22,5 +22,8 @@
 
 5. There will be no cases of memory exceeding 256 bytes.
 
+6. The file 109006273_bonus.c is a compiled version of "calculator_recursion" folder
+
+7. The project is done in "calculator_recursion" folder
 
 
