@@ -1,0 +1,120 @@
+TO DO
+======
+1. Don't forget to re read the slide to fix all the edge case errors
+// like for example not allowing @ $ % etc etc or like valid variable name
+
+2. (from ppt)
+=============
+Trace all the code if you like to // step 1
+understand each detail and 
+review what you have learnt during the courses.
+Modify the grammar and parser.c to accept new operators, including &, |, ^, ++, --.
+Replace the current evaluateTree () in codeGen.c to generate assembly code during the pre-order tree traversal.
+Check the error handling in the parser.c to print “EXIT 1” when encountering errors.
+Optimize your assembly code to get extra credits!
+==================================================================================================================
+details below --
+ ============  |
+               |
+              \ /
+CodeGen.c / CodeGen.h
+======================
+1. Modify the evaluateTree() function to print assembly code
+The provided package only calculates the answer
+
+2. Store the final value of x, y, z in registers r0, r1, r2 respectively before you print EXIT 0
+
+3. Do some optimization to reduce total cycles of the generated assembly code to get extra credits
+
+parser.c / parser.h
+====================
+1.Add some parsing functions to handle with the complete grammar
+
+2.Do more error handling according to the grammar
+
+3.Handle the undefined variable error
+The package code ignores this error now
+
+4.Make sure you deal with the divide by zero error
+Detailed rules are in the previous slides
+
+lex.h / lex.c
+=============
+1. Add some tokens to the TokenSet according to the complete grammar
+The grammar is in page 10
+
+2. Modify the package code to accept new tokens
+
+3. Make sure your code can accept variable names with multiple characters, numbers and underscores
+A variable starting with a number is invalid
+
+complete grammar rules
+======================
+You should modify the package code according to the grammar below
+statement        := END | assign_expr /* or_expr */ END 
+assign_expr      := ID ASSIGN assign_expr | or_expr 
+or_expr          := xor_expr or_expr_tail 
+or_expr_tail     := OR xor_expr or_expr_tail | NiL 
+xor_expr         := and_expr xor_expr_tail 
+xor_expr_tail    := XOR and_expr xor_expr_tail | NiL 
+and_expr         := addsub_expr and_expr_tail 
+and_expr_tail    := AND addsub_expr and_expr_tail | NiL 
+addsub_expr      := muldiv_expr addsub_expr_tail 
+addsub_expr_tail := ADDSUB muldiv_expr addsub_expr_tail | NiL 
+muldiv_expr      := unary_expr muldiv_expr_tail 
+muldiv_expr_tail := MULDIV unary_expr muldiv_expr_tail | NiL 
+unary_expr       := ADDSUB unary_expr | factor  // maybe put 0 around here ehe
+factor           := INT | ID | INCDEC ID | LPAREN assign_expr RPAREN | ID ASSIGN /* or_expr */
+// for now
+
+
+additional
+===========
+ADDSUB: + or -
+MULDIV: * or /
+INCDEC: ++ or --
+AND: &
+OR: |
+XOR: ^
+
+INT: integer number
+ID: variable
+ASSIGN: =
+LPAREN: (
+RPAREN: )
+END: ‘\n’
+
+
+
+grammar rn??
+============
+statement	:= ENDFILE | END | expr END
+expr    	:= term expr_tail
+expr_tail	:= ADDSUB term expr_tail | NiL
+term 		:= factor term_tail
+term_tail	:= MULDIV factor term_tail| NiL
+factor		:= INT | ADDSUB INT |
+		   	   ID  | ADDSUB ID  | 
+		   	   ID ASSIGN expr |
+		   	   LPAREN expr RPAREN |
+		   	   ADDSUB LPAREN expr RPAREN
+
+                // why do u have to make this different..?
+
+
+symbol tables ? wut
+===================
+
+Note that, to deal with expressions including variables such as
+>> x=3
+>> 4*x+(y=((10-2)/4))
+we use a symbol table to record variables’ current values
+we use getval() and setval() to manipulate the symbol table
+The symbol table are used both in the parser and the code generator.
+
+#define TBLSIZE 65535
+typedef struct {
+    char name[MAXLEN];
+    int val;
+} Symbol;
+Symbol table[TBLSIZE];
